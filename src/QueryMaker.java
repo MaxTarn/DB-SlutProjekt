@@ -1,11 +1,9 @@
 public class QueryMaker {
-    private StringBuilder query = new StringBuilder();
+    private String query;
 
     private String queryType = null;
     private String tableName = null;
     private Integer numberOfColumns = null;
-
-
     private String[] columnNames = null;
 
     //used when adding new data to already made tables
@@ -23,20 +21,16 @@ public class QueryMaker {
             throw new RuntimeException("ERROR: the length of the colum arrays are not the same");
         }
         if(numberOfColumns == null) numberOfColumns = columnNamesOrValuesOrParameters.length;
-
     }
     public void setTypeOfQuery(String type){
         switch (type) {
-            case "INSERT INTO", "CREATE TABLE" -> queryType = type;
+            case "INSERT INTO", "CREATE TABLE", "CREATE TABLE IF NOT EXISTS"-> queryType = type;
             default -> throw new RuntimeException("ERROR: given query type is not allowd");
         }
     }
-
     public void setTableName(String nameOfTable){
         tableName = nameOfTable + " ";
     }
-
-
     public void setColumnNames(String[] columnNames){
         setNumberOfColumns(columnNames);
         this.columnNames = columnNames;
@@ -50,19 +44,15 @@ public class QueryMaker {
         this.columnParameters = columnParameters;
     }
 
-    @Override
-    public String toString(){
-
-        //when you try to call toString() before the global variables are set
-        if(queryType == null || tableName == null || columnNames == null){
-            throw new RuntimeException("ERROR: query lacks enough data");
-        }
-
-
-        query.append(queryType);
-        query.append(" ");
-        query.append(tableName);
-        query.append("(");
+    public String getQuery(){
+        return query;
+    }
+    public void makeQuery(){
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(queryType);
+        queryBuilder.append(" ");
+        queryBuilder.append(tableName);
+        queryBuilder.append("(");
 
         switch (queryType) {
 
@@ -70,33 +60,30 @@ public class QueryMaker {
 
                 //adds the names of the diffrent colums into the query
                 for (int i = 0; i < columnNames.length; i++) {
-                    query.append(columnNames[i]);
-                    if (i != (columnNames.length - 1)) query.append(", ");
+                    queryBuilder.append(columnNames[i]);
+                    if (i != (columnNames.length - 1)) queryBuilder.append(", ");
                 }
-                query.append(") ");
-                query.append("Values (");
+                queryBuilder.append(") ");
+                queryBuilder.append("Values (");
 
                 //adds the values for each column in the order specified in columnNames[]
                 for (int i = 0; i < columnValues.length; i++) {
-                    query.append("\"");
-                    query.append(columnValues[i]);
-                    query.append("\"");
-                    if (i != (columnValues.length - 1)) query.append(", ");
+                    queryBuilder.append("\"");
+                    queryBuilder.append(columnValues[i]);
+                    queryBuilder.append("\"");
+                    if (i != (columnValues.length - 1)) queryBuilder.append(", ");
                 }
-
             }
-            case "CREATE TABLE" -> {
+            case "CREATE TABLE", "CREATE TABLE IF NOT EXISTS" -> {
                 for (int i = 0; i < columnNames.length; i++) {
-                    query.append(columnNames[i]);
-                    query.append(" ");
-                    query.append(columnParameters[i]);
-                    if (i != (columnNames.length - 1)) query.append(", ");
+                    queryBuilder.append(columnNames[i]);
+                    queryBuilder.append(" ");
+                    queryBuilder.append(columnParameters[i]);
+                    if (i != (columnNames.length - 1)) queryBuilder.append(", ");
                 }
             }
         }
-        query.append(");");
-        return query.toString();
+        queryBuilder.append(");");
+        query = queryBuilder.toString();
     }
-
-
 }

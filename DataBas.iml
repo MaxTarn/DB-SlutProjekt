@@ -10,21 +10,21 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../8.0.11" />
+          <root url="file://$MODULE_DIR$/../../../Dependencies/2.6.0" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/../../../8.0.11" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/../../../Dependencies/2.6.0" recursive="false" />
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../2.6.0" />
+          <root url="file://$MODULE_DIR$/../../../Dependencies/8.0.11" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/../../../2.6.0" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/../../../Dependencies/8.0.11" recursive="false" />
       </library>
     </orderEntry>
   </component>

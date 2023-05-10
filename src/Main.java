@@ -1,63 +1,51 @@
 import com.mysql.cj.jdbc.MysqlDataSource;
-import com.mysql.cj.jdbc.MysqlDataSource;
 
-import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 public class Main {
     static MysqlDataSource dataSource;
     static String url = "localhost";
     static int port = 3306;
-    static String database = "myfirstdatabase";
+    static String database = "DB-slutprojekt";
     static String username = "root";
-    static String password = "";
+    static String password = "admin123";
 
 
     public static void main(String[] args) throws SQLException {
-        /*InitializeDatabase();
+
+        //----------inits the different queries that creates the three tables----------
+        QueryMaker usersQuery = new QueryMaker();
+        usersQuery.setTypeOfQuery("CREATE TABLE IF NOT EXISTS");
+        usersQuery.setTableName("users");
+        usersQuery.setColumnNames(new String[]{"id", "real_name", "user_name"});
+        usersQuery.setColumnParameters(new String[]{"int PRIMARY KEY NOT NULL AUTO_INCREMENT", "varchar(100)", "varchar(100)"});
+        usersQuery.makeQuery();
+
+        QueryMaker postsQuery = new QueryMaker();
+        postsQuery.setTypeOfQuery("CREATE TABLE IF NOT EXISTS");
+        postsQuery.setTableName("posts");
+        postsQuery.setColumnNames(new String[]{"id", "name", "content"});
+        postsQuery.setColumnParameters(new String[]{"int PRIMARY KEY NOT NULL AUTO_INCREMENT", "varchar(100)", "varchar(255)"});
+        postsQuery.makeQuery();
+
+        QueryMaker commentsQuery = new QueryMaker();
+        commentsQuery.setTypeOfQuery("CREATE TABLE IF NOT EXISTS");
+        commentsQuery.setTableName("comments");
+        commentsQuery.setColumnNames(new String[]{"id", "name", "content"});
+        commentsQuery.setColumnParameters(new String[]{"int PRIMARY KEY NOT NULL AUTO_INCREMENT", "varchar(100)", "varchar(255)"});
+        commentsQuery.makeQuery();
+        //--------inits the different queries that creates the three tables END--------
+
+
+        InitializeDatabase();
+
         Connection connection = GetConnection();
         Statement statement = connection.createStatement();
 
-        String queryName = Terminal.Ask("Your Name");
-        String queryEmail = Terminal.Ask(" Your Email");
-        String queryCreated = Terminal.Ask("Created at this Time");
-        String queryOnline = Terminal.Ask("Is Online");
-        String queryPhone = Terminal.Ask("Your phone number");
-        String queryAddress = Terminal.Ask("Your address");
+        statement.executeUpdate(usersQuery.getQuery());
+        statement.executeUpdate(postsQuery.getQuery());
+        statement.executeUpdate(commentsQuery.getQuery());
 
-
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO newusers (name, email, created, online, phone, address) VALUES ( ")
-                .append("\"").append(queryName).append("\"").append(",")
-                .append("\"").append(queryEmail).append("\"").append(",")
-                .append("\"").append(queryCreated).append("\"").append(",")
-                .append("\"").append(queryOnline).append("\"").append(",")
-                .append("\"").append(queryPhone).append("\"").append(",")
-                .append("\"").append(queryAddress).append("\"").append(");");
-        System.out.println(query);
-
-        int result = statement. executeUpdate(query.toString());
-        connection.close();*/
-
-        QueryMaker addNewDataQuery = new QueryMaker();
-        addNewDataQuery.setTypeOfQuery("INSERT INTO");
-        addNewDataQuery.setTableName("users");
-        addNewDataQuery.setColumnNames(new String[]{"name", "age", "phoneNumber"});
-        addNewDataQuery.setColumnValues(new String[]{"bobby", "68", "0902975", });
-
-
-        System.out.println(addNewDataQuery.toString());
-
-        QueryMaker makeNewTableQuery = new QueryMaker();
-        makeNewTableQuery.setTypeOfQuery("CREATE TABLE");
-        makeNewTableQuery.setTableName("users");
-        makeNewTableQuery.setColumnNames(new String[]{"id", "name", "password"});
-        makeNewTableQuery.setColumnParameters(new String[]{"int PRIMARY KEY NOT NULL AUTO_INCREMENT", "varchar(100) NOT NULL", "varchar(100)"});
-
-        System.out.print("make new table:   ");
-        System.out.println(makeNewTableQuery);
-
-
-
+        connection.close();
     }
 
 

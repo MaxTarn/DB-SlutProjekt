@@ -1,13 +1,14 @@
 import com.mysql.cj.jdbc.MysqlDataSource;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 public class Main {
     static MysqlDataSource dataSource;
     static String url = "localhost";
     static int port = 3306;
-    static String database = "DB-slutprojekt";
+    static String database = "DB-Slutprojekt";
     static String username = "root";
-    static String password = "admin123";
+    static String password = "";
 
 
     public static void main(String[] args) throws SQLException {
@@ -16,8 +17,8 @@ public class Main {
         QueryMaker usersQuery = new QueryMaker();
         usersQuery.setTypeOfQuery("CREATE TABLE IF NOT EXISTS");
         usersQuery.setTableName("users");
-        usersQuery.setColumnNames(new String[]{"id", "real_name", "user_name"});
-        usersQuery.setColumnParameters(new String[]{"int PRIMARY KEY NOT NULL AUTO_INCREMENT", "varchar(100)", "varchar(100)"});
+        usersQuery.setColumnNames(new String[]{"id", "real_name", "user_name", "online"});
+        usersQuery.setColumnParameters(new String[]{"int PRIMARY KEY NOT NULL AUTO_INCREMENT", "varchar(100)", "varchar(100)", "BOOLEAN NOT NULL"});
         usersQuery.makeQuery();
 
         QueryMaker postsQuery = new QueryMaker();
@@ -36,6 +37,10 @@ public class Main {
         //--------inits the different queries that creates the three tables END--------
 
 
+
+
+
+
         InitializeDatabase();
 
         Connection connection = GetConnection();
@@ -44,6 +49,8 @@ public class Main {
         statement.executeUpdate(usersQuery.getQuery());
         statement.executeUpdate(postsQuery.getQuery());
         statement.executeUpdate(commentsQuery.getQuery());
+
+
 
         connection.close();
     }
@@ -79,5 +86,39 @@ public class Main {
             System.exit(0);
             return null;
         }
+    }
+    //adds 10 users to the database
+    public static void addUsers(Statement statement) throws SQLException {
+
+        QueryMaker user1  = makeUser("Jack", "shit",0);
+        QueryMaker user2  = makeUser("bobby", "bobbinsson",1);
+        QueryMaker user3  = makeUser("nippon", "caps",0);
+        QueryMaker user4  = makeUser("javascript", "anarchy",1);
+        QueryMaker user5  = makeUser("computer", "fucking work",0);
+        QueryMaker user6  = makeUser("water", "bottle",1);
+        QueryMaker user7  = makeUser("power", "drink",0);
+        QueryMaker user8  = makeUser("homer", "simpson",1);
+        QueryMaker user9  = makeUser("bag", "inbox",0);
+        QueryMaker user10 = makeUser("gas", "oline",1);
+
+        statement.executeUpdate(user1.getQuery());
+        statement.executeUpdate(user2.getQuery());
+        statement.executeUpdate(user3.getQuery());
+        statement.executeUpdate(user4.getQuery());
+        statement.executeUpdate(user5.getQuery());
+        statement.executeUpdate(user6.getQuery());
+        statement.executeUpdate(user7.getQuery());
+        statement.executeUpdate(user8.getQuery());
+        statement.executeUpdate(user9.getQuery());
+        statement.executeUpdate(user10.getQuery());
+    }
+    public static QueryMaker makeUser(String realName, String userName, int online){
+        QueryMaker user = new QueryMaker();
+        user.setTypeOfQuery("INSERT INTO");
+        user.setTableName("users");
+        user.setColumnNames(new String[]{"real_name", "user_name", "online"});
+        user.setColumnValues(new String[]{realName, userName, String.valueOf(online) });
+        user.makeQuery();
+        return user;
     }
 }

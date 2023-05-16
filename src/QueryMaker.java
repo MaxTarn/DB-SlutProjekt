@@ -24,7 +24,7 @@ public class QueryMaker {
     }
     public void setTypeOfQuery(String type){
         switch (type) {
-            case "INSERT INTO", "CREATE TABLE", "CREATE TABLE IF NOT EXISTS"-> queryType = type;
+            case "INSERT INTO", "CREATE TABLE", "CREATE TABLE IF NOT EXISTS", "DROP TABLE"-> queryType = type;
             default -> throw new RuntimeException("ERROR: given query type is not allowd");
         }
     }
@@ -52,12 +52,12 @@ public class QueryMaker {
         queryBuilder.append(queryType);
         queryBuilder.append(" ");
         queryBuilder.append(tableName);
-        queryBuilder.append("(");
+
 
         switch (queryType) {
 
             case "INSERT INTO" -> {
-
+                queryBuilder.append("(");
                 //adds the names of the diffrent colums into the query
                 for (int i = 0; i < columnNames.length; i++) {
                     queryBuilder.append(columnNames[i]);
@@ -73,17 +73,33 @@ public class QueryMaker {
                     queryBuilder.append("\"");
                     if (i != (columnValues.length - 1)) queryBuilder.append(", ");
                 }
+                queryBuilder.append(")");
             }
             case "CREATE TABLE", "CREATE TABLE IF NOT EXISTS" -> {
+                queryBuilder.append("(");
                 for (int i = 0; i < columnNames.length; i++) {
                     queryBuilder.append(columnNames[i]);
                     queryBuilder.append(" ");
                     queryBuilder.append(columnParameters[i]);
                     if (i != (columnNames.length - 1)) queryBuilder.append(", ");
                 }
+                queryBuilder.append(")");
+            }
+
+            case "DROP TABLE" -> {
+                //no parameters are needed for dropping a table, therefore no code in this case
             }
         }
-        queryBuilder.append(");");
+
+        //adds a semicolon at end, signifying a complete sql query
+        queryBuilder.append(";");
+
         query = queryBuilder.toString();
+    }
+
+
+    @Override
+    public String toString(){
+        return query;
     }
 }

@@ -8,12 +8,45 @@ public class Main {
     static int port = 3306;
     static String database = "DB-Slutprojekt";
     static String username = "root";
-    static String password = "";
+    static String password = "admin123";
 
 
     public static void main(String[] args) throws SQLException {
 
-        //----------inits the different queries that creates the three tables----------
+        Integer[] intArr = new Integer[]{};
+        InitializeDatabase();
+
+        Connection connection = GetConnection();
+        Statement statement = connection.createStatement();
+        createTables(statement);
+
+        connection.close();
+    }
+
+    //drops the tables : users , posts , comments
+    public static void dropTables(Statement statement) throws SQLException {
+        QueryMaker dropUsersQuery = new QueryMaker();
+        dropUsersQuery.setTypeOfQuery("DROP TABLE");
+        dropUsersQuery.setTableName("users");
+        dropUsersQuery.makeQuery();
+
+        QueryMaker dropPostsQuery = new QueryMaker();
+        dropPostsQuery.setTypeOfQuery("DROP TABLE");
+        dropPostsQuery.setTableName("posts");
+        dropPostsQuery.makeQuery();
+
+        QueryMaker dropCommentsQuery = new QueryMaker();
+        dropCommentsQuery.setTypeOfQuery("DROP TABLE");
+        dropCommentsQuery.setTableName("comments");
+        dropCommentsQuery.makeQuery();
+
+        statement.execute(dropUsersQuery.getQuery());
+        statement.execute(dropPostsQuery.getQuery());
+        statement.execute(dropCommentsQuery.getQuery());
+    }
+
+    //creates the tables if they don't already exist
+    public static void createTables(Statement statement) throws SQLException {
         QueryMaker usersQuery = new QueryMaker();
         usersQuery.setTypeOfQuery("CREATE TABLE IF NOT EXISTS");
         usersQuery.setTableName("users");
@@ -34,28 +67,11 @@ public class Main {
         commentsQuery.setColumnNames(new String[]{"id", "name", "content"});
         commentsQuery.setColumnParameters(new String[]{"int PRIMARY KEY NOT NULL AUTO_INCREMENT", "varchar(100)", "varchar(255)"});
         commentsQuery.makeQuery();
-        //--------inits the different queries that creates the three tables END--------
 
-
-
-
-
-
-        InitializeDatabase();
-
-        Connection connection = GetConnection();
-        Statement statement = connection.createStatement();
-
-        statement.executeUpdate(usersQuery.getQuery());
-        statement.executeUpdate(postsQuery.getQuery());
-        statement.executeUpdate(commentsQuery.getQuery());
-
-
-
-        connection.close();
+        statement.execute(usersQuery.getQuery());
+        statement.execute(postsQuery.getQuery());
+        statement.execute(commentsQuery.getQuery());
     }
-
-
     public static void InitializeDatabase(){
         try {
             System.out.print("Configuring data source...");
@@ -75,13 +91,13 @@ public class Main {
     }
     public static Connection GetConnection(){
         try{
-            //System.out.printf("Fetching connection to database...");
+            System.out.printf("Fetching connection to database...");
             Connection connection = dataSource.getConnection();
-            //System.out.printf("done!\n");
+            System.out.printf("done!\n");
             return connection;
         }
         catch(SQLException e){
-            //System.out.printf("failed!\n");
+            System.out.printf("failed!\n");
             //PrintSQLException(e);
             System.exit(0);
             return null;

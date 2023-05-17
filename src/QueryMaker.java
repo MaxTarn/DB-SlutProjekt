@@ -1,5 +1,7 @@
+import java.util.Objects;
+
 public class QueryMaker {
-    private String query;
+    private String query = null;
 
     private String queryType = null;
     private String tableName = null;
@@ -13,6 +15,7 @@ public class QueryMaker {
     private String[] columnParameters = null;
 
     private String whereParameters = null;
+
 
 
     //runs when adding new data to a table, checks if given amount of columnsNames and columnsValues match
@@ -41,6 +44,7 @@ public class QueryMaker {
         setNumberOfColumns(columnNames);
         this.columnNames = columnNames;
     }
+    public void setColumnNames(String input){setColumnNames(new String[]{input});}
     public void setColumnValues(String[] columnValues){
         setNumberOfColumns(columnValues);
         this.columnValues = columnValues;
@@ -73,6 +77,10 @@ public class QueryMaker {
 
                 //adds the values for each column in the order specified in columnNames[]
                 for (int i = 0; i < columnValues.length; i++) {
+                    if(Objects.equals(columnValues[i], "GETDATE()")){
+                        queryBuilder.append("NOW()");
+                        continue;
+                    }
                     queryBuilder.append("\"");
                     queryBuilder.append(columnValues[i]);
                     queryBuilder.append("\"");
@@ -94,17 +102,25 @@ public class QueryMaker {
                 queryBuilder.append(")");
             }
 
+            //not 100% working
             case "DROP TABLE" -> {
                 queryBuilder.append(queryType);
-                for (int i = 0; i < columnNames.length; i++) {
-
-                }
-
+                queryBuilder.append(" ");
+                queryBuilder.append(tableName);
             }
             case "SELECT" ->{
-                System.out.println("dgfin");
-                queryBuilder.append("WHERE ");
-                queryBuilder.append(whereParameters);
+                queryBuilder.append(queryType);
+                queryBuilder.append(" ");
+                for (int i = 0; i < columnNames.length; i++) {
+                    queryBuilder.append(columnNames[i]);
+                    if(columnNames.length >1)queryBuilder.append(", ");
+                }
+                queryBuilder.append(" FROM ");
+                queryBuilder.append(tableName);
+                if(whereParameters != null){
+                    queryBuilder.append("WHERE ");
+                    queryBuilder.append(whereParameters);
+                }
             }
         }
 
@@ -114,12 +130,13 @@ public class QueryMaker {
         query = queryBuilder.toString();
     }
 
-
-    @Override
-    public String toString(){
-        return query;
-    }
     public String getQuery(){
         return query;
     }
+    @Override
+    public String toString(){
+        if(query == null) makeQuery();
+        return query;
+    }
+
 }

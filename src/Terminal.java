@@ -1,6 +1,10 @@
 import java.util.Scanner;
 
 public class Terminal {
+
+    public static String addPost(){
+        return "";
+    }
     public static String ReadLine(){
         Scanner console = new Scanner(System.in);
         String input = console.nextLine();

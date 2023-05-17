@@ -5,16 +5,23 @@ public class Main {
     static DataConnStateWrapper wrapper = new DataConnStateWrapper();
 
     public static void main(String[] args) throws SQLException {
-        /*DB.init(wrapper);
-        DB.dropTables(wrapper.statement);
-        wrapper.connection.close();*/
+        DB.init(wrapper);
+//        DB.dropTables(wrapper);
+//        DB.createTables(wrapper);
+        DB.addUsers(wrapper);
 
-        QueryMaker select = new QueryMaker();
-        select.setTypeOfQuery("SELECT");
-        select.setColumnNames(new String[]{"id"});
-        select.setWhereParameters("id=0");
+        QueryMaker sel = new QueryMaker();
+        sel.setTableName("users");
+        sel.setTypeOfQuery("SELECT");
+        sel.setColumnNames("*");
+        sel.makeQuery();
+        ResultSet response = wrapper.statement.executeQuery(sel.getQuery());
+        while(response.next()){
+            int id = response.getInt("id");
+            System.out.println(id);
+        }
 
-        System.out.println(select.toString());
+        wrapper.connection.close();
     }
 
 

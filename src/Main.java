@@ -1,28 +1,26 @@
-import com.sun.source.tree.UsesTree;
-
 import java.sql.*;
+
+
 public class Main {
-    static DataConnStateWrapper wrapper = new DataConnStateWrapper();
+    static ConnetionToDB wrapper = new ConnetionToDB();
 
     public static void main(String[] args) throws SQLException {
         DB.init(wrapper);
-//        DB.dropTables(wrapper);
-//        DB.createTables(wrapper);
-        DB.addUsers(wrapper);
+        //DB.dropTables(wrapper);
+        //DB.createTables(wrapper);
+        //DB.addUsers(wrapper);
 
-        QueryMaker sel = new QueryMaker();
-        sel.setTableName("users");
-        sel.setTypeOfQuery("SELECT");
-        sel.setColumnNames("*");
-        sel.makeQuery();
-        ResultSet response = wrapper.statement.executeQuery(sel.getQuery());
-        while(response.next()){
-            int id = response.getInt("id");
-            System.out.println(id);
-        }
-
+        Terminal.printActions(wrapper);
         wrapper.connection.close();
     }
 
 
 }
+
+
+
+
+
+
+
+

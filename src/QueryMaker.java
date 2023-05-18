@@ -77,7 +77,8 @@ public class QueryMaker {
 
                 //adds the values for each column in the order specified in columnNames[]
                 for (int i = 0; i < columnValues.length; i++) {
-                    if(Objects.equals(columnValues[i], "GETDATE()")){
+                    //when a function is called, this if statement makes it so that so additional " are added
+                    if(Objects.equals(columnValues[i], "NOW()")){
                         queryBuilder.append("NOW()");
                         continue;
                     }
@@ -131,6 +132,7 @@ public class QueryMaker {
     }
 
     public String getQuery(){
+        if(query == null)makeQuery();
         return query;
     }
     @Override

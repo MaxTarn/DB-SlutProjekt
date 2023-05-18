@@ -11,11 +11,20 @@ public class DB {
    static String username = "root";
    static String password = "admin123";
    static String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?serverTimezone=UTC";
+   static Wrapper wrapper;
 
 
    //--------------- methods that can 'reset' DB ---------------
+
+   //drops all tables, makes new tables, adds some data to the users table
+   public static void resetDB( ) throws SQLException {
+      dropTables();
+      createTables();
+      addUsers();
+
+   }
    //drops the tables : users , posts , comments
-   public static void dropTables(ConnetionToDB wrapper) throws SQLException {
+   public static void dropTables( ) throws SQLException {
       QueryMaker dropUsersQuery = new QueryMaker();
       dropUsersQuery.setTypeOfQuery("DROP TABLE");
       dropUsersQuery.setTableName("users");
@@ -39,7 +48,7 @@ public class DB {
 
 
    //creates the tables if they don't already exist
-   public static void createTables(ConnetionToDB wrapper) throws SQLException {
+   public static void createTables( ) throws SQLException {
       QueryMaker usersQuery = new QueryMaker();
       usersQuery.setTypeOfQuery("CREATE TABLE IF NOT EXISTS");
       usersQuery.setTableName("users");
@@ -68,9 +77,9 @@ public class DB {
    }
 
    //adds 10 users to the database
-   public static void addUsers(ConnetionToDB wrapper) throws SQLException {
+   public static void addUsers( ) throws SQLException {
 
-      QueryMaker user1  = makeUser("Jack", "HeresJohny",0, "Jack@email.com", "NOW()");
+      QueryMaker user1  = makeUser("Jack", "jack",0, "Jack@email.com", "NOW()");
       QueryMaker user2  = makeUser("Bobby", "bobbinsson",1, "Bobby@email.com", "NOW()" );
       QueryMaker user3  = makeUser("Noggle", "Wobble",0, "noggle@email.com", "NOW()");
       QueryMaker user4  = makeUser("Schtina", "Chaos",1, "Schtina@email.com", "NOW()");
@@ -116,7 +125,7 @@ public class DB {
 
 
    //--------------- methods that changes things in DB---------------
-   public static void addNewUserToDB(ConnetionToDB wrapper) throws SQLException {
+   public static void addNewUserToDB( ) throws SQLException {
       String realName = Terminal.ask("Your legal Name");
       String userName = Terminal.ask("User Name");
       int online = Integer.parseInt(Terminal.ask("Are you online (0 -> no , 1 -> yes)"));
@@ -125,12 +134,25 @@ public class DB {
       wrapper.statement.executeUpdate(query.getQuery());
    }
 
+   public static void addNewPostToDB() throws SQLException {
+      String nameOfPost = Terminal.ask("Headline of the post");
+      String content = Terminal.ask("Content of post");
+      QueryMaker newPostQuery = new QueryMaker();
+      newPostQuery.setTypeOfQuery("INSERT INTO");
+      newPostQuery.setTableName("posts");
+      newPostQuery.setColumnNames(new String[]{"user_id", "name", "content"});
+      newPostQuery.setColumnValues(new String[]{String.valueOf(wrapper.currSession.userId), nameOfPost, content});
+      wrapper.statement.executeUpdate(newPostQuery.toString());
+
+   }
 
    //--------------- methods that changes things in DB END---------------
 
 
    //--------------- methods that collects data from DB ---------------
-   public static void demandLogIn(ConnetionToDB wrapper) throws SQLException {
+
+   //user will input a
+   public static void demandLogIn() throws SQLException {
       Boolean userExists = false;
       int id = -1;
 
@@ -138,8 +160,8 @@ public class DB {
          String userName = Terminal.ask("User Name");
          QueryMaker selectUser = new QueryMaker();
          selectUser.setTypeOfQuery("SELECT");
-         selectUser.setTableName("users");
          selectUser.setColumnNames("id");
+         selectUser.setTableName("users");
          selectUser.setWhereParameters("user_name=" + "'" + userName + "'");
          ResultSet response = wrapper.statement.executeQuery(selectUser.getQuery());
          while(response.next()){
@@ -147,17 +169,22 @@ public class DB {
          }
 
          //if id is still -1 there is no user with that username
-         if(id != -1)userExists = true;else System.out.println("Invalid User name.");
+         if(id != -1){
+            userExists = true;
+            wrapper.currSession.loggedIn = true;
+            wrapper.currSession.userId = id;
+         }else System.out.println("Invalid User name.");
       }
    }
    //--------------- methods that collects data from DB END---------------
 
 
    //--------------- inits ---------------
-   public static void init(ConnetionToDB wrapper) throws SQLException {
-      initializeDatabase(wrapper.dataSource);
-      wrapper.connection = getConnection(wrapper.dataSource);
-      wrapper.statement = wrapper.connection.createStatement();
+   public static void init(Wrapper wrapp) throws SQLException {
+      wrapper = wrapp;
+      initializeDatabase(wrapp.dataSource);
+      wrapp.connection = getConnection(wrapp.dataSource);
+      wrapp.statement = wrapp.connection.createStatement();
    }
 
    public static void initializeDatabase(MysqlDataSource dataSource){

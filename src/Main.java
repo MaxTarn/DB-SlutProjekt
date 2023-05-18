@@ -2,15 +2,16 @@ import java.sql.*;
 
 
 public class Main {
-    static ConnetionToDB wrapper = new ConnetionToDB();
+    static Wrapper wrapper = new Wrapper();
 
     public static void main(String[] args) throws SQLException {
         DB.init(wrapper);
-        //DB.dropTables(wrapper);
-        //DB.createTables(wrapper);
-        //DB.addUsers(wrapper);
+        Terminal.init(wrapper);
 
-        Terminal.printActions(wrapper);
+        Terminal.printActions();
+
+
+
         wrapper.connection.close();
     }
 

@@ -5,7 +5,8 @@ import java.sql.Statement;
 
 //used as a wrapper so that DB can edit values
 
-public class ConnetionToDB {
+public class Wrapper {
+   Session currSession = new Session();
    MysqlDataSource dataSource = new MysqlDataSource();
    Connection connection;
    Statement statement;

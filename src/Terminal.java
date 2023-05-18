@@ -3,8 +3,9 @@ import java.util.Scanner;
 
 public class Terminal {
     static Scanner console = new Scanner(System.in);
+    static Wrapper wrapper;
 
-    public static void printActions(ConnetionToDB wrapper) throws SQLException {
+    public static void printActions( ) throws SQLException {
         System.out.println("----------");
         System.out.println("What do you want to do?");
         System.out.println("1: Log in");
@@ -18,13 +19,14 @@ public class Terminal {
         System.out.println();
         switch (input){
             case "1" ->{
-                DB.demandLogIn(wrapper);
+                DB.demandLogIn();
             }
             case "2" ->{
-                DB.addNewUserToDB(wrapper);
+                DB.addNewUserToDB();
             }
             case "3" ->{
-
+                if(!wrapper.currSession.loggedIn) DB.demandLogIn();
+                DB.addNewPostToDB();
             }
             /*case "4" ->{
 
@@ -51,7 +53,9 @@ public class Terminal {
 
 
 
-
+    public static void init(Wrapper wrapp){
+        wrapper = wrapp;
+    }
     public static void close(){
         console.close();
     }

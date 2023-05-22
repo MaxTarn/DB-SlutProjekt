@@ -1,4 +1,6 @@
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Terminal {
@@ -28,13 +30,15 @@ public class Terminal {
                 if(!wrapper.currSession.loggedIn) DB.demandLogIn();
                 DB.addNewPostToDB();
             }
-            /*case "4" ->{
+            case "4" ->{
+                if(!wrapper.currSession.loggedIn) DB.demandLogIn();
+                DB.addNewCommentToDB();
 
             }
             case "5" ->{
-
+                DB.deleteUser();
             }
-            case "6" ->{
+            /*case "6" ->{
 
             }*/
         }
@@ -45,12 +49,16 @@ public class Terminal {
     }
 
     public static String ask(String question){
-        Scanner console = new Scanner(System.in);
         System.out.print(question + " :   ");
         String input = console.nextLine();
         return input;
     }
 
+    public static int askForInt(String question){
+        System.out.print(question + " : ");
+        int input = Integer.parseInt(console.nextLine());
+        return input;
+    }
 
 
     public static void init(Wrapper wrapp){

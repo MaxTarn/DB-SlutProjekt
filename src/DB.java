@@ -3,6 +3,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class DB {
    static String host = "localhost";
@@ -67,7 +68,7 @@ public class DB {
       QueryMaker commentsQuery = new QueryMaker();
       commentsQuery.setTypeOfQuery("CREATE TABLE IF NOT EXISTS");
       commentsQuery.setTableName("comments");
-      commentsQuery.setColumnNames(new String[]{"id", "user_id", "name", "content"});
+      commentsQuery.setColumnNames(new String[]{"id", "user_id","post_id",  "content"});
       commentsQuery.setColumnParameters(new String[]{"int PRIMARY KEY NOT NULL AUTO_INCREMENT", "int NOT NULL", "varchar(100)", "varchar(255)"});
       commentsQuery.makeQuery();
 
@@ -124,7 +125,7 @@ public class DB {
 
 
 
-   //--------------- methods that changes things in DB---------------
+   //--------------- methods that adds things to DB---------------
    public static void addNewUserToDB( ) throws SQLException {
       String realName = Terminal.ask("Your legal Name");
       String userName = Terminal.ask("User Name");
@@ -146,8 +147,61 @@ public class DB {
 
    }
 
-   //--------------- methods that changes things in DB END---------------
+   public static void addNewCommentToDB() throws SQLException {
+      ResultSet response = DB.getAllPosts();
+      ArrayList<Integer> allPostIDs = new ArrayList<>();
+      while(response.next()){
+         String postName = response.getString("name");
+         String content = response.getString("content");
+         int id = response.getInt("id");
+         allPostIDs.add(id);
 
+         System.out.println("---------- " + postName + " ----------");
+         System.out.println("Post ID:" + id);
+         System.out.println(content);
+
+      }
+      System.out.println("---------- ----------");
+      int chosenPostId = Terminal.askForInt("What post do yo wish to comment on (enter Post ID)");
+      boolean goodPostId = false;
+      for (int id:allPostIDs){
+         if (id == chosenPostId) goodPostId= true;
+      }
+
+      if(goodPostId == false) return;
+      String commentContent = Terminal.ask("Enter your comment");
+
+
+      QueryMaker newCommentQueryy = new QueryMaker();
+      newCommentQueryy.setTypeOfQuery("INSERT INTO");
+      newCommentQueryy.setTableName("comments");
+      newCommentQueryy.setColumnNames(new String[]{"user_id", "post_id", "content"});
+      newCommentQueryy.setColumnValues(new String[]{
+              String.valueOf(wrapper.currSession.userId),
+              String.valueOf(chosenPostId),
+              commentContent});
+
+      wrapper.statement.executeUpdate(newCommentQueryy.getQuery());
+   }
+
+   //--------------- methods that adds things to DB END---------------
+
+   //--------------- methods that removes things rows DB ---------------
+
+   public static void deleteUser() throws SQLException {
+      ResultSet allUsers = getAllUsers();
+      System.out.println("List of all users:");
+      while(allUsers.next()){
+         String userName = allUsers.getString("user_name");
+         int id = allUsers.getInt("id");
+         System.out.println("Unique id: " + id + "| User Name: " + userName);
+      }
+      Terminal.ask("What user do you want to delete(Enter the unique id)");
+   }
+
+
+
+   //--------------- methods that removes things rows DB END ---------------
 
    //--------------- methods that collects data from DB ---------------
 
@@ -157,7 +211,7 @@ public class DB {
       int id = -1;
 
       while(!userExists){
-         String userName = Terminal.ask("User Name");
+         String userName = Terminal.ask("Enter Your User name");
          QueryMaker selectUser = new QueryMaker();
          selectUser.setTypeOfQuery("SELECT");
          selectUser.setColumnNames("id");
@@ -175,6 +229,24 @@ public class DB {
             wrapper.currSession.userId = id;
          }else System.out.println("Invalid User name.");
       }
+   }
+
+   public static ResultSet getAllPosts() throws SQLException {
+      QueryMaker allPostsQuery = new QueryMaker();
+      allPostsQuery.setTypeOfQuery("SELECT");
+      allPostsQuery.setColumnNames("*");
+      allPostsQuery.setTableName("posts");
+      ResultSet response = wrapper.statement.executeQuery(allPostsQuery.getQuery());
+      return response;
+
+   }
+   public static ResultSet getAllUsers() throws SQLException {
+      QueryMaker allUsersQuery = new QueryMaker();
+      allUsersQuery.setTypeOfQuery("SELECT");
+      allUsersQuery.setColumnNames("*");
+      allUsersQuery.setTableName("users");
+      ResultSet response = wrapper.statement.executeQuery(allUsersQuery.getQuery());
+      return response;
    }
    //--------------- methods that collects data from DB END---------------
 
